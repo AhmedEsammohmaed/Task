@@ -1,0 +1,26 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    int n, m, a, b;
+    cin >> n >> m >> a >>b;
+    int count=0;
+    while(n!=0)
+    {
+        if (n>=m)
+        {
+            n-=m;
+            count+=b;
+        }
+        else
+        {
+            n--;
+            count+=a;
+        }
+
+
+    }
+    cout<<count;
+}
