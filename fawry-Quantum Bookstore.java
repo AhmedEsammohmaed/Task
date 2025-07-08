@@ -1,7 +1,5 @@
 import java.util.*;
 
-
-
 abstract class book
 {
     protected String ISBN, title,author;
@@ -155,23 +153,32 @@ class Quantumbookstore
         }
         return null;
     }
-    public double buybook(String ISBN,int quantity,String email,String address)
-    {
-        if(!inventory.containsKey(ISBN))
-        {
-            throw new IllegalArgumentException("Quantum book store: Book with ISBN not found: " + ISBN);
+    public double buybook(String isbn, int quantity, String email, String address) {
+        book book = inventory.get(isbn);
+    
+        if (book == null) {
+            throw new IllegalArgumentException("Quantum book store: Book with ISBN not found: " + isbn);
         }
-         book b=inventory.get(ISBN);
-         if(!b.isforsale())
-         {
-            throw new IllegalArgumentException("Quantum book store: Book is not for sale: " + b.gettitle());
-         }
-
-        return b.buy(quantity,email,address);
+    
+        // Book is NOT for sale
+        if (!book.isforsale()) {
+            if (quantity == 0) {
+                // Just show book info without throwing an error
+                if (book instanceof showcasebook) {
+                    ((showcasebook) book).show();
+                } else {
+                    System.out.println("Quantum book store: Book is not for sale: " + book.gettitle());
+                }
+                return 0.0;
+            } else {
+                throw new IllegalArgumentException("Quantum book store: Book is not for sale: " + book.gettitle());
+            }
+        }
+    
+        // Book is sellable – go ahead and process the purchase
+        return book.buy(quantity, email, address);
     }
-    public book getBookByISBN(String isbn) {
-        return inventory.get(isbn);
-    }
+    
     
 }
 
@@ -205,6 +212,7 @@ public class fawrytask2 {
     store.addbook(new showcasebook("ISBN004", "Rare Quantum Notes", "Einstein", 1905));
    //---------------------------------------------------------
    System.out.println("---------------------------------------------------------------");
+   System.out.println("        //The next section is for Error purchase: PaperBook -->");
     //Error purchase: PaperBook
     try{
         double total1=store.buybook("ISBN001", 0, "buyer1@example.com", "123 Cairo Street");
@@ -213,7 +221,8 @@ public class fawrytask2 {
     catch (Exception e) {
             System.out.println(e.getMessage());
    }
-
+   System.out.println(" ");
+   System.out.println("        //The next section is for Successful purchase: PaperBook -->");
      //Successful purchase: PaperBook
     try{
     double total2=store.buybook("ISBN001", 1, "buyer1@example.com", "123 Cairo Street");
@@ -224,7 +233,8 @@ public class fawrytask2 {
     }
     System.out.println("---------------------------------------------------------------");
    //----------------------------------------------------------------------------------------------------
-   // invalid purchase: Ebook
+   // invalid purchase: more than 1 Ebook
+   System.out.println("        //The next section is for invalid purchase: more than 1 Ebook -->");
    try{
     double total3=store.buybook("ISBN002", 3, "buyer4@example.com", null);
     System.out.println("Quantum book store: Total paid for PaperBook: $" + total3);
@@ -232,8 +242,9 @@ public class fawrytask2 {
     catch (Exception e) {
         System.out.println(e.getMessage());
     }
-
-    //Successful : more than 1 Ebook
+    System.out.println(" ");
+    System.out.println("        //The next section is for Successful : Ebook -->");
+    //Successful :Ebook
     try{
         double total4=store.buybook("ISBN002", 1, "buyer4@example.com", null);
         System.out.println("Quantum book store: Total paid for PaperBook: $" + total4);
@@ -244,6 +255,7 @@ public class fawrytask2 {
     System.out.println("---------------------------------------------------------------");
     //---------------------------------------------------------------------------------------
     //invalid purchase: AudioBook
+    System.out.println("        //The next section is for invalid purchase: AudioBook -->");
     try{
     double total5=store.buybook("ISBN003", 2, null,null);
     System.out.println("Quantum book store: Total paid for PaperBook: $" + total5);
@@ -252,6 +264,8 @@ public class fawrytask2 {
         System.out.println(e.getMessage());
     }
     //Successful purchase: AudioBook
+    System.out.println(" ");
+    System.out.println("        //The next section is for Successful purchase: AudioBook -->");
     try{
     double total6=store.buybook("ISBN003", 1,  "audio_lover@example.com", null);
     System.out.println("Quantum book store: Total paid for PaperBook: $" + total6);
@@ -263,8 +277,9 @@ public class fawrytask2 {
     System.out.println("---------------------------------------------------------------");
      //--------------------------------------------------------------------------------------
     //invalid showcase book
+    System.out.println("         //The next section is for invalid showcase book because of of asking for quantity -->");
     try{
-        double total7=store.buybook("ISBN001", 2, "buyer4@example.com", null);
+        double total7=store.buybook("ISBN004", 2, "buyer4@example.com", null);
         System.out.println("Quantum book store: Total paid for PaperBook: $" + total7); 
     }
     catch (Exception e) {
@@ -272,8 +287,10 @@ public class fawrytask2 {
     }
 
     // Successfulshowcase book
+    System.out.println(" ");
+    System.out.println("        //The next section is for Successfulshowcase book-->");
     try{
-    double total8=store.buybook("ISBN001", 2, "buyer1@example.com", null);
+    double total8=store.buybook("ISBN004", 0, "buyer1@example.com", null);
     System.out.println("Quantum book store: Total paid for PaperBook: $" + total8); 
     }
     catch (Exception e) {
@@ -281,11 +298,7 @@ public class fawrytask2 {
     }
     System.out.println("---------------------------------------------------------------");
     //---------------------------------------------------------------------------------------
-    book showcase=store.getBookByISBN("ISBN004");
-    if(showcase instanceof showcasebook)
-    {
-        ((showcasebook) showcase).show();
-    }
+    
 
 }  
 }
